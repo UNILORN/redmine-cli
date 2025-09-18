@@ -69,6 +69,18 @@ var listIssuesCmd = &cobra.Command{
 			params["status_id"] = status
 		}
 
+		// Check if --mine flag is set to filter by current user
+		mine, _ := cmd.Flags().GetBool("mine")
+		if mine {
+			// Get current user ID
+			userResp, err := c.GetCurrentUser()
+			if err != nil {
+				fmt.Printf("Error getting current user: %v\n", err)
+				return
+			}
+			params["author_id"] = fmt.Sprintf("%d", userResp.User.ID)
+		}
+
 		response, err := c.GetIssues(params)
 		if err != nil {
 			fmt.Printf("Error getting issues: %v\n", err)
@@ -255,6 +267,7 @@ func init() {
 	listIssuesCmd.Flags().String("offset", "0", "Offset for pagination")
 	listIssuesCmd.Flags().String("project", "", "Project ID to filter by")
 	listIssuesCmd.Flags().String("status", "", "Status ID to filter by")
+	listIssuesCmd.Flags().Bool("mine", false, "Filter issues authored by current user")
 
 	// Add flags to show command
 	showIssueCmd.Flags().BoolP("comments", "c", false, "Include comments (journals) in the output")
