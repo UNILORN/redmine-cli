@@ -63,6 +63,18 @@ var listIssuesCmd = &cobra.Command{
 			params["status_id"] = status
 		}
 
+		// Check if --mine flag is set to filter by current user
+		mine, _ := cmd.Flags().GetBool("mine")
+		if mine {
+			// Get current user ID
+			userResp, err := c.GetCurrentUser()
+			if err != nil {
+				fmt.Printf("Error getting current user: %v\n", err)
+				return
+			}
+			params["author_id"] = fmt.Sprintf("%d", userResp.User.ID)
+		}
+
 		response, err := c.GetIssues(params)
 		if err != nil {
 			fmt.Printf("Error getting issues: %v\n", err)

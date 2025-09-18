@@ -69,6 +69,7 @@ go build -o redmine
 - `--offset`: オフセット (デフォルト: 0)
 - `--project`: プロジェクトIDでフィルタ
 - `--status`: ステータスIDでフィルタ
+- `--mine`: 現在のユーザーが作成したIssueのみ表示
 
 例:
 
