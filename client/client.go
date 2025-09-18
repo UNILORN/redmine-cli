@@ -95,6 +95,11 @@ type IssueResponse struct {
 	Issue Issue `json:"issue"`
 }
 
+type UserResponse struct {
+	User User `json:"user"`
+}
+
+
 func NewClient(baseURL, apiKey string) *Client {
 	return &Client{
 		BaseURL: strings.TrimSuffix(baseURL, "/"),
@@ -188,3 +193,24 @@ func (c *Client) GetIssue(id int, include ...string) (*IssueResponse, error) {
 
 	return &issueResp, nil
 }
+
+func (c *Client) GetCurrentUser() (*UserResponse, error) {
+	resp, err := c.makeRequest("GET", "/users/current.json")
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	var userResp UserResponse
+	if err := json.Unmarshal(body, &userResp); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	return &userResp, nil
+}
+
