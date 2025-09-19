@@ -46,3 +46,15 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts
+dist/
+
+# Semantic release
+CHANGELOG.md
