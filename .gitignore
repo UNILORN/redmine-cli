@@ -38,8 +38,6 @@ ehthumbs.db
 Thumbs.db
 
 # Config files (may contain sensitive data)
-*.yaml
-*.yml
 !example.yaml
 !example.yml
 
