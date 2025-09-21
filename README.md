@@ -69,12 +69,19 @@ go build -o redmine
 - `--offset`: オフセット (デフォルト: 0)
 - `--project`: プロジェクトIDでフィルタ
 - `--status`: ステータスIDでフィルタ
-- `--mine`: 現在のユーザーが作成したIssueのみ表示
+- `--me`: 現在のユーザーが作成したIssueのみ表示
 
 例:
 
 ```bash
+# 基本的な使用例
 ./redmine issues list --limit 50 --project 1 --status 1
+
+# 自分が作成したIssueのみ表示
+./redmine issues list --me
+
+# 自分が作成したIssueをプロジェクトでフィルタ
+./redmine issues list --me --project 1
 ```
 
 #### Issue詳細の表示

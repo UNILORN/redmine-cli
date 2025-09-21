@@ -64,8 +64,8 @@ var listIssuesCmd = &cobra.Command{
 		}
 
 		// Check if --mine flag is set to filter by current user
-		mine, _ := cmd.Flags().GetBool("mine")
-		if mine {
+		me, _ := cmd.Flags().GetBool("me")
+		if me {
 			// Get current user ID
 			userResp, err := c.GetCurrentUser()
 			if err != nil {
