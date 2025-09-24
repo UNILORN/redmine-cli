@@ -2,7 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"redmine-cli/config"
+
+	"github.com/UNILORN/redmine-cli/config"
 
 	"github.com/spf13/cobra"
 )
