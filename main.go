@@ -1,7 +1,7 @@
 package main
 
 import (
-	"redmine-cli/cmd"
+	"github.com/UNILORN/redmine-cli/cmd"
 )
 
 func main() {
