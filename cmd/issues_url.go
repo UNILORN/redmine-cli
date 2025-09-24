@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"redmine-cli/config"
 	"strconv"
 	"strings"
+
+	"github.com/UNILORN/redmine-cli/config"
 
 	"github.com/spf13/cobra"
 )
