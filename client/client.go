@@ -11,39 +11,39 @@ import (
 )
 
 type Client struct {
-	BaseURL   string
-	APIKey    string
+	BaseURL    string
+	APIKey     string
 	HTTPClient *http.Client
 }
 
 type Issue struct {
-	ID          int            `json:"id"`
-	Project     Project        `json:"project"`
-	Tracker     Tracker        `json:"tracker"`
-	Status      Status         `json:"status"`
-	Priority    Priority       `json:"priority"`
-	Author      User           `json:"author"`
-	AssignedTo  *User          `json:"assigned_to,omitempty"`
-	Subject     string         `json:"subject"`
-	Description string         `json:"description"`
-	StartDate   *string        `json:"start_date,omitempty"`
-	DueDate     *string        `json:"due_date,omitempty"`
-	DoneRatio   int            `json:"done_ratio"`
-	IsPrivate   bool           `json:"is_private"`
-	EstimatedHours *float64    `json:"estimated_hours,omitempty"`
-	SpentHours  *float64       `json:"spent_hours,omitempty"`
-	CreatedOn   time.Time      `json:"created_on"`
-	UpdatedOn   time.Time      `json:"updated_on"`
-	ClosedOn    *time.Time     `json:"closed_on,omitempty"`
-	CustomFields []CustomField `json:"custom_fields,omitempty"`
-	Journals    []Journal      `json:"journals,omitempty"`
+	ID             int           `json:"id"`
+	Project        Project       `json:"project"`
+	Tracker        Tracker       `json:"tracker"`
+	Status         Status        `json:"status"`
+	Priority       Priority      `json:"priority"`
+	Author         User          `json:"author"`
+	AssignedTo     *User         `json:"assigned_to,omitempty"`
+	Subject        string        `json:"subject"`
+	Description    string        `json:"description"`
+	StartDate      *string       `json:"start_date,omitempty"`
+	DueDate        *string       `json:"due_date,omitempty"`
+	DoneRatio      int           `json:"done_ratio"`
+	IsPrivate      bool          `json:"is_private"`
+	EstimatedHours *float64      `json:"estimated_hours,omitempty"`
+	SpentHours     *float64      `json:"spent_hours,omitempty"`
+	CreatedOn      time.Time     `json:"created_on"`
+	UpdatedOn      time.Time     `json:"updated_on"`
+	ClosedOn       *time.Time    `json:"closed_on,omitempty"`
+	CustomFields   []CustomField `json:"custom_fields,omitempty"`
+	Journals       []Journal     `json:"journals,omitempty"`
 }
 
 type Journal struct {
-	ID        int            `json:"id"`
-	User      User           `json:"user"`
-	Notes     string         `json:"notes"`
-	CreatedOn time.Time      `json:"created_on"`
+	ID        int             `json:"id"`
+	User      User            `json:"user"`
+	Notes     string          `json:"notes"`
+	CreatedOn time.Time       `json:"created_on"`
 	Details   []JournalDetail `json:"details,omitempty"`
 }
 
@@ -92,10 +92,10 @@ type CustomField struct {
 }
 
 type IssuesResponse struct {
-	Issues      []Issue `json:"issues"`
-	TotalCount  int     `json:"total_count"`
-	Offset      int     `json:"offset"`
-	Limit       int     `json:"limit"`
+	Issues     []Issue `json:"issues"`
+	TotalCount int     `json:"total_count"`
+	Offset     int     `json:"offset"`
+	Limit      int     `json:"limit"`
 }
 
 type IssueResponse struct {
@@ -117,6 +117,26 @@ type CreateIssueData struct {
 	ParentIssueID int    `json:"parent_issue_id,omitempty"`
 	StartDate     string `json:"start_date,omitempty"`
 	DueDate       string `json:"due_date,omitempty"`
+}
+
+// UpdateIssueRequest represents the request body for updating an issue
+type UpdateIssueRequest struct {
+	Issue UpdateIssueData `json:"issue"`
+}
+
+// UpdateIssueData represents the data structure for updating an issue
+type UpdateIssueData struct {
+	Subject       *string `json:"subject,omitempty"`
+	Description   *string `json:"description,omitempty"`
+	StatusID      *int    `json:"status_id,omitempty"`
+	AssignedToID  *int    `json:"assigned_to_id,omitempty"`
+	Notes         *string `json:"notes,omitempty"`
+	TrackerID     *int    `json:"tracker_id,omitempty"`
+	PriorityID    *int    `json:"priority_id,omitempty"`
+	StartDate     *string `json:"start_date,omitempty"`
+	DueDate       *string `json:"due_date,omitempty"`
+	DoneRatio     *int    `json:"done_ratio,omitempty"`
+	ParentIssueID *int    `json:"parent_issue_id,omitempty"`
 }
 
 func NewClient(baseURL, apiKey string) *Client {
@@ -229,6 +249,44 @@ func (c *Client) CreateIssue(req CreateIssueRequest) (*IssueResponse, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	var issueResp IssueResponse
+	if err := json.Unmarshal(body, &issueResp); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	return &issueResp, nil
+}
+
+// UpdateIssue updates an existing issue
+func (c *Client) UpdateIssue(issueID int, req UpdateIssueRequest) (*IssueResponse, error) {
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	endpoint := fmt.Sprintf("/issues/%d.json", issueID)
+	resp, err := c.makeRequest("PUT", endpoint, jsonData)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("failed to update issue (status: %d): %s", resp.StatusCode, string(body))
+	}
+
+	// Handle 204 No Content response (when only updating notes/comments)
+	if resp.StatusCode == http.StatusNoContent {
+		// For 204 responses, we need to fetch the updated issue separately
+		return c.GetIssue(issueID)
+	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
