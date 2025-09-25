@@ -86,8 +86,35 @@ var listIssuesCmd = &cobra.Command{
 			return
 		}
 
+		// Column widths
+		const (
+			idWidth       = 6
+			statusWidth   = 12
+			assigneeWidth = 10
+			dateWidth     = 12
+		)
+
 		fmt.Printf("Issues (Total: %d)\n", response.TotalCount)
-		fmt.Println(strings.Repeat("-", 100))
+
+		// Header
+		fmt.Printf("%-*s | %-*s | %-*s | %-*s | %-*s | %-*s | %s\n",
+			idWidth, "ID",
+			statusWidth, "Status",
+			assigneeWidth, "Assignee",
+			dateWidth, "StartDate",
+			dateWidth, "DueDate",
+			dateWidth, "UpdatedAt",
+			"Subject")
+
+		// Separator
+		fmt.Printf("%s-|-%s-|-%s-|-%s-|-%s-|-%s-|-%s\n",
+			strings.Repeat("-", idWidth),
+			strings.Repeat("-", statusWidth),
+			strings.Repeat("-", assigneeWidth),
+			strings.Repeat("-", dateWidth),
+			strings.Repeat("-", dateWidth),
+			strings.Repeat("-", dateWidth),
+			strings.Repeat("-", 7))
 
 		for _, issue := range response.Issues {
 			assignedTo := "Not assigned"
@@ -95,13 +122,30 @@ var listIssuesCmd = &cobra.Command{
 				assignedTo = issue.AssignedTo.Name
 			}
 
-			fmt.Printf("#%d | %s | %s | %s | %s | %s\n",
-				issue.ID,
-				truncateString(issue.Subject, 40),
-				issue.Status.Name,
-				issue.Priority.Name,
-				assignedTo,
-				issue.UpdatedOn.Format("2006-01-02"))
+			startDate := "-"
+			if issue.StartDate != nil {
+				startDate = *issue.StartDate
+			}
+
+			dueDate := "-"
+			if issue.DueDate != nil {
+				dueDate = *issue.DueDate
+			}
+
+			// Truncate long fields to fit column widths
+			status := issue.Status.Name
+			if len(status) > statusWidth {
+				status = status[:statusWidth-3] + "..."
+			}
+
+			fmt.Printf("#%-*d | %-*s | %-*s | %-*s | %-*s | %-*s | %s\n",
+				idWidth-1, issue.ID, // -1 for the # prefix
+				statusWidth, status,
+				assigneeWidth, assignedTo,
+				dateWidth, startDate,
+				dateWidth, dueDate,
+				dateWidth, issue.UpdatedOn.Format("2006-01-02"),
+				issue.Subject)
 		}
 	},
 }
