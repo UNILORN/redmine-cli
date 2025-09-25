@@ -30,6 +30,7 @@ func init() {
 	listIssuesCmd.Flags().String("offset", "0", "Offset for pagination")
 	listIssuesCmd.Flags().String("project", "", "Project ID to filter by")
 	listIssuesCmd.Flags().String("status", "", "Status ID to filter by")
+	listIssuesCmd.Flags().Bool("me", false, "Filter issues authored by current user")
 
 	// Add flags to show command
 	showIssueCmd.Flags().BoolP("comments", "c", false, "Include comments (journals) in the output")
