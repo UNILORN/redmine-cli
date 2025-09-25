@@ -138,6 +138,9 @@ type UpdateIssueData struct {
 	DoneRatio     *int    `json:"done_ratio,omitempty"`
 	ParentIssueID *int    `json:"parent_issue_id,omitempty"`
 }
+type UserResponse struct {
+	User User `json:"user"`
+}
 
 func NewClient(baseURL, apiKey string) *Client {
 	return &Client{
@@ -307,10 +310,6 @@ type ProjectsResponse struct {
 
 type UsersResponse struct {
 	Users []User `json:"users"`
-}
-
-type UserResponse struct {
-	User User `json:"user"`
 }
 
 type TrackersResponse struct {
