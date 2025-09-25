@@ -72,7 +72,7 @@ var listIssuesCmd = &cobra.Command{
 				fmt.Printf("Error getting current user: %v\n", err)
 				return
 			}
-			params["author_id"] = fmt.Sprintf("%d", userResp.User.ID)
+			params["assigned_to_id"] = fmt.Sprintf("%d", userResp.User.ID)
 		}
 
 		response, err := c.GetIssues(params)
