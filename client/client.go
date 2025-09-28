@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -316,6 +317,24 @@ type TrackersResponse struct {
 	Trackers []Tracker `json:"trackers"`
 }
 
+// SearchResult represents a single search result
+type SearchResult struct {
+	ID          int    `json:"id"`
+	Title       string `json:"title"`
+	Type        string `json:"type"`
+	URL         string `json:"url"`
+	Description string `json:"description"`
+	Datetime    string `json:"datetime"`
+}
+
+// SearchResponse represents the response from Redmine search API
+type SearchResponse struct {
+	Results    []SearchResult `json:"results"`
+	TotalCount int            `json:"total_count"`
+	Offset     int            `json:"offset"`
+	Limit      int            `json:"limit"`
+}
+
 func (c *Client) GetProjects() (*ProjectsResponse, error) {
 	resp, err := c.makeRequest("GET", "/projects.json")
 	if err != nil {
@@ -394,4 +413,36 @@ func (c *Client) GetTrackers() (*TrackersResponse, error) {
 	}
 
 	return &trackersResp, nil
+}
+
+// Search performs a search using the Redmine search API
+func (c *Client) Search(params map[string]string) (*SearchResponse, error) {
+	endpoint := "/search.json"
+
+	// Add query parameters
+	if len(params) > 0 {
+		paramStrings := make([]string, 0, len(params))
+		for key, value := range params {
+			paramStrings = append(paramStrings, fmt.Sprintf("%s=%s", url.QueryEscape(key), url.QueryEscape(value)))
+		}
+		endpoint += "?" + strings.Join(paramStrings, "&")
+	}
+
+	resp, err := c.makeRequest("GET", endpoint)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	var searchResp SearchResponse
+	if err := json.Unmarshal(body, &searchResp); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	return &searchResp, nil
 }
