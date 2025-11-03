@@ -1,5 +1,25 @@
 # Redmine CLI
 
+> **⚠️ このプロジェクトは開発を終了しました / This project is deprecated**
+>
+> より優れたRedmine CLIツールが開発されています。今後はそちらをご利用ください：
+> 
+> **🎉 新しいCLIツール: [kqns91/redmine-go](https://github.com/kqns91/redmine-go)**
+>
+> 素晴らしいツールを作成していただいた[@kqns91](https://github.com/kqns91)さんに感謝します。
+> このリポジトリはアーカイブ目的で残されています。
+>
+> ---
+> 
+> A better Redmine CLI tool has been developed. Please use it instead:
+>
+> **🎉 New CLI tool: [kqns91/redmine-go](https://github.com/kqns91/redmine-go)**
+>
+> Thank you to [@kqns91](https://github.com/kqns91) for creating an excellent tool.
+> This repository is kept for archival purposes only.
+>
+> ---
+
 RedmineのIssueやProjectを管理するためのコマンドラインツールです。
 
 ## 機能
