@@ -1,5 +1,25 @@
 # Contributing to Redmine CLI
 
+> **⚠️ このプロジェクトは開発を終了しました / This project is deprecated**
+>
+> より優れたRedmine CLIツールが開発されたため、このプロジェクトの開発は終了しました。
+> 新しいツールへのコントリビュートをご検討ください：
+> 
+> **[kqns91/redmine-go](https://github.com/kqns91/redmine-go)**
+>
+> ---
+> 
+> Development of this project has stopped as a better Redmine CLI tool has been developed.
+> Please consider contributing to the new tool instead:
+>
+> **[kqns91/redmine-go](https://github.com/kqns91/redmine-go)**
+>
+> ---
+
+## Historical Information
+
+The information below is kept for historical reference only.
+
 ## Commit Message Convention
 
 This project uses [Conventional Commits](https://www.conventionalcommits.org/) for automatic versioning and changelog generation.
